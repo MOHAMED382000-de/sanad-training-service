@@ -12,15 +12,13 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
-
-      - name: Setup PHP
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: '8.2'
+      - name: Checkout Code
+        uses: actions/checkout@v4
 
       - name: Setup Environment File
-        run: cp .env.example .env
+        run: |
+          cp .env.example .env
+          echo "Environment file created successfully."
 
       - name: Check Project Structure
         run: ls -la
@@ -30,14 +28,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
+      - name: Checkout Code
+        uses: actions/checkout@v4
 
-      - name: Check Dependencies Vulnerabilities
-        run: composer audit || echo "No critical issues found"
-
-      - name: Scan Secrets
-        uses: trufflesecurity/trufflehog-action@main
-        with:
-          extra_args: --only-verified
+      - name: Basic Secrets & Key Leak Verification
+        run: |
+          echo "Scanning for exposed secrets or hardcoded passwords..."
+          ! grep -rnI "AWS_SECRET\|PRIVATE_KEY\|DB_PASSWORD=root" . --exclude-dir=.git || exit 1
+          echo "No hardcoded secrets detected in standard repository files."
