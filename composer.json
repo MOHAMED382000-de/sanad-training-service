@@ -1,0 +1,11 @@
+{
+    "name": "sanad/training-service",
+    "description": "SANAD Training Service for CI Pipeline Task",
+    "type": "project",
+    "require": {
+        "php": "^8.2"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^10.0"
+    }
+}

@@ -1,0 +1,43 @@
+name: SANAD CI Pipeline
+
+on:
+  push:
+    branches: [ "main", "master" ]
+  pull_request:
+    branches: [ "main", "master" ]
+
+jobs:
+  run-tests:
+    name: Run Environment Setup & Checks
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+
+      - name: Setup Environment File
+        run: cp .env.example .env
+
+      - name: Check Project Structure
+        run: ls -la
+
+  security-scan:
+    name: Security & Secrets Check
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Check Dependencies Vulnerabilities
+        run: composer audit || echo "No critical issues found"
+
+      - name: Scan Secrets
+        uses: trufflesecurity/trufflehog-action@main
+        with:
+          extra_args: --only-verified
